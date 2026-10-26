@@ -1,0 +1,24 @@
+# Dependencies and builds
+node_modules/
+dist/
+build/
+out/
+.next/
+.astro/
+.svelte-kit/
+_site/
+.jekyll-cache/
+.sass-cache/
+coverage/
+*.tsbuildinfo
+
+# Secrets and personal config — never committed
+.env
+.env.*
+!.env.example
+
+.DS_Store
+*.log
+
+# Superset: per-user overrides
+.superset/config.local.json

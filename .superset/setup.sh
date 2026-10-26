@@ -5,6 +5,9 @@ set -euo pipefail
 
 root="${SUPERSET_ROOT_PATH:-}"
 
+# Leak guard (.githooks/pre-commit).
+git config core.hooksPath .githooks
+
 # Env files are gitignored: copy them from the main checkout, never overwrite.
 if [[ -n "$root" && "$root" != "$PWD" ]]; then
   for f in "$root"/.env "$root"/.env.*; do
