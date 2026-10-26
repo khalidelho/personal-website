@@ -1,0 +1,316 @@
+---
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { site, contactLinks } from '../data/site';
+import { resume, hasResume } from '../data/resume';
+
+// Builds run from the project root (npm scripts), where public/ lives.
+const hasPdf = existsSync(join(process.cwd(), 'public', 'resume.pdf'));
+const links = contactLinks();
+---
+
+<Base title={`Résumé — ${site.name}`} description={resume.summary || site.description}>
+  <div class="wrap">
+    <div class="screen-only"><Nav base="/" /></div>
+
+    <header class="head">
+      <div class="head-row">
+        <h1>{site.name}<span class="dot">.</span></h1>
+        {
+          hasPdf && (
+            <a class="pdf screen-only" href="/resume.pdf" download>
+              Download PDF ↓
+            </a>
+          )
+        }
+      </div>
+      <p class="label focus">{site.focus.join(' · ')}</p>
+      {resume.summary && <p class="summary">{resume.summary}</p>}
+      <p class="print-only contact-line">
+        {links.map((l) => l.href.replace(/^mailto:|^https:\/\//, '')).join(' · ')}
+      </p>
+    </header>
+
+    {
+      !hasResume && (
+        <p class="empty">
+          The résumé is on its way. Meanwhile, <a href="/#contact">get in touch</a>.
+        </p>
+      )
+    }
+
+    {
+      resume.experience.length > 0 && (
+        <section aria-labelledby="exp-h" class="block">
+          <h2 id="exp-h" class="label">Experience</h2>
+          <ol class="list">
+            {resume.experience.map((r) => (
+              <li class="item">
+                <div class="when">
+                  {r.start} – {r.end}
+                </div>
+                <div class="what">
+                  <h3>
+                    {r.title}
+                    <span class="org"> · {r.org}</span>
+                  </h3>
+                  {r.location && <p class="meta">{r.location}</p>}
+                  <ul class="points">
+                    {r.points.map((p) => (
+                      <li>{p}</li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )
+    }
+
+    {
+      [
+        { id: 'edu', label: 'Education', entries: resume.education },
+        { id: 'cert', label: 'Certifications', entries: resume.certifications },
+      ]
+        .filter((s) => s.entries.length > 0)
+        .map((s) => (
+          <section aria-labelledby={`${s.id}-h`} class="block">
+            <h2 id={`${s.id}-h`} class="label">
+              {s.label}
+            </h2>
+            <ol class="list">
+              {s.entries.map((e) => (
+                <li class="item">
+                  <div class="when">{e.year}</div>
+                  <div class="what">
+                    <h3>
+                      {e.title}
+                      <span class="org"> · {e.org}</span>
+                    </h3>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))
+    }
+
+    {
+      resume.skills.length > 0 && (
+        <section aria-labelledby="skills-h" class="block">
+          <h2 id="skills-h" class="label">Skills</h2>
+          <dl class="skills">
+            {resume.skills.map((g) => (
+              <div>
+                <dt>{g.group}</dt>
+                <dd>{g.items.join(', ')}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )
+    }
+
+    <div class="screen-only"><Footer /></div>
+  </div>
+</Base>
+
+<style>
+  .head {
+    padding: 64px 0 48px;
+    border-bottom: var(--rule);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .head-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px 32px;
+  }
+  h1 {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(44px, 7vw, 104px);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+  }
+  .pdf {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 20px;
+    border: var(--rule);
+    font-family: var(--display);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .pdf:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .summary {
+    margin: 0;
+    max-width: 760px;
+    font-size: clamp(19px, 1.8vw, 23px);
+    line-height: 1.45;
+    font-weight: 500;
+  }
+  .empty {
+    padding: 56px 0 120px;
+    margin: 0;
+    font-size: 20px;
+  }
+
+  .block {
+    padding: 48px 0;
+    border-bottom: var(--hairline);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px 40px;
+  }
+  .block > .label {
+    grid-column: 1 / -1;
+  }
+  .list {
+    grid-column: 1 / -1;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+  .item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 32px;
+  }
+  .when {
+    flex: 0 0 160px;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--accent);
+    padding-top: 6px;
+  }
+  .what {
+    flex: 1 1 420px;
+    min-width: 0;
+  }
+  h3 {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(22px, 2.2vw, 30px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .org {
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .meta {
+    margin: 6px 0 0;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .points {
+    margin: 14px 0 0;
+    padding-left: 1.1em;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 17px;
+    line-height: 1.55;
+  }
+  .skills {
+    grid-column: 1 / -1;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px 40px;
+  }
+  .skills dt {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 17px;
+  }
+  .skills dd {
+    margin: 6px 0 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .print-only {
+    display: none;
+  }
+
+  @media print {
+    @page {
+      margin: 14mm 16mm;
+    }
+    .screen-only {
+      display: none;
+    }
+    .print-only {
+      display: block;
+    }
+    :global(.wrap) {
+      padding: 0;
+      max-width: none;
+    }
+    .head {
+      padding: 0 0 14pt;
+      gap: 8pt;
+    }
+    h1 {
+      font-size: 30pt;
+    }
+    .summary {
+      font-size: 11.5pt;
+    }
+    .contact-line {
+      margin: 0;
+      font-size: 10pt;
+    }
+    .block {
+      padding: 14pt 0;
+      gap: 8pt 20pt;
+    }
+    .list {
+      gap: 12pt;
+    }
+    .item {
+      break-inside: avoid;
+    }
+    .when {
+      flex-basis: 90pt;
+      font-size: 10pt;
+      padding-top: 2pt;
+    }
+    h3 {
+      font-size: 13pt;
+    }
+    .points {
+      margin-top: 5pt;
+      gap: 3pt;
+      font-size: 10.5pt;
+    }
+    .meta,
+    .skills dd {
+      font-size: 10pt;
+    }
+    .skills dt {
+      font-size: 11pt;
+    }
+  }
+</style>

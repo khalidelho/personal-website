@@ -1,0 +1,21 @@
+---
+import { site } from '../data/site';
+---
+
+<footer class="footer">
+  <span>© {new Date().getFullYear()} {site.name}</span>
+  <span>Set in Inter Tight</span>
+</footer>
+
+<style>
+  .footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 24px 0 40px;
+    border-top: var(--hairline);
+    font-size: 14px;
+    color: var(--muted);
+  }
+</style>

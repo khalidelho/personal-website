@@ -1,0 +1,101 @@
+@import '@fontsource-variable/inter-tight';
+@import '@fontsource-variable/inter';
+
+:root {
+  --paper: #ffffff;
+  --ink: #111111;
+  --muted: #444444;
+  --accent: #d0260f;
+  --display: 'Inter Tight Variable', 'Inter Tight', system-ui, sans-serif;
+  --body: 'Inter Variable', Inter, system-ui, sans-serif;
+  --rule: 2px solid var(--ink);
+  --hairline: 1px solid var(--ink);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--ink);
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.wrap {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.label {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.dot {
+  color: var(--accent);
+}
+
+/* Entrance animations: hidden only when the motion script will reveal them. */
+.motion [data-reveal],
+.motion [data-reveal-group] > * {
+  opacity: 0;
+}
+
+.line {
+  display: block;
+  overflow: hidden;
+  /* room for descenders inside the mask */
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+
+.line > span {
+  display: inline-block;
+}
+
+.motion .line > span {
+  transform: translateY(105%);
+}
+
+/* Printing must never catch a section that hasn't scrolled into view yet. */
+@media print {
+  .motion [data-reveal],
+  .motion [data-reveal-group] > *,
+  .motion .line > span {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

@@ -1,0 +1,274 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { site, contactLinks } from '../data/site';
+import { projects } from '../data/projects';
+import { getArticles } from '../lib/medium';
+
+const [first, ...rest] = site.name.split(' ');
+const links = contactLinks();
+const articles = await getArticles(site.medium);
+const pad = (n: number) => String(n).padStart(2, '0');
+const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+
+<Base>
+  <div class="wrap">
+    <Nav hasWriting={articles.length > 0} />
+
+    <header id="top" class="hero">
+      <h1>
+        <span class="line"><span data-line>{first}</span></span>
+        <span class="line"><span data-line>{rest.join(' ')}<span class="dot">.</span></span></span>
+      </h1>
+      <div class="hero-row" data-reveal>
+        <p class="label focus">
+          {site.focus.map((f) => <span>{f}</span>)}
+        </p>
+        <p class="lede">{site.description}</p>
+      </div>
+    </header>
+
+    <section id="index" aria-labelledby="index-h" class="index">
+      <div class="index-head">
+        <h2 id="index-h" class="label">Selected work</h2>
+        <span class="label dot">({pad(projects.length)})</span>
+      </div>
+      <ol class="rows" data-reveal-group>
+        {
+          projects.map((p, i) => {
+            const Tag = p.href ? 'a' : 'div';
+            return (
+              <li>
+                <Tag class="row" href={p.href}>
+                  <span class="no dot">{pad(i + 1)}</span>
+                  <span class="name">{p.name}</span>
+                  <span class="desc">{p.desc}</span>
+                  <span class="kind">{p.kind}</span>
+                </Tag>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </section>
+
+    {
+      articles.length > 0 && (
+        <section id="writing" aria-labelledby="writing-h" class="index">
+          <div class="index-head">
+            <h2 id="writing-h" class="label">Writing</h2>
+            <a class="label more" href={`https://medium.com/@${site.medium}`}>
+              All on Medium ↗
+            </a>
+          </div>
+          <ol class="rows" data-reveal-group>
+            {articles.map((a) => (
+              <li>
+                <a class="row" href={a.url}>
+                  <time class="no date" datetime={a.date.toISOString()}>
+                    {fmt.format(a.date)}
+                  </time>
+                  <span class="name name-sm">{a.title}</span>
+                  <span class="desc">{a.excerpt}</span>
+                  <span class="kind">Medium ↗</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )
+    }
+
+    <section id="about" aria-labelledby="about-h" class="about" data-reveal>
+      <h2 id="about-h" class="label">About</h2>
+      <p>
+        By day I keep an IT environment and its billing running. On my own time I build the tools I
+        wish I had, and I write up how they work.
+      </p>
+      <div class="tools">
+        <span class="label">Tools</span>
+        {site.tools.map((t) => <span>{t}</span>)}
+      </div>
+    </section>
+
+    <section id="contact" aria-labelledby="contact-h" class="contact">
+      <h2 id="contact-h" data-reveal>Say hello<span class="dot">.</span></h2>
+      <div class="contact-links" data-reveal-group>
+        {links.map((l) => <a href={l.href}>{l.label} ↗</a>)}
+      </div>
+    </section>
+
+    <Footer />
+  </div>
+</Base>
+
+<style>
+  .hero {
+    padding: 72px 0 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    border-bottom: var(--rule);
+  }
+  .hero h1 {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(56px, 11vw, 168px);
+    line-height: 0.9;
+    letter-spacing: -0.045em;
+  }
+  .hero-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px 64px;
+    align-items: flex-start;
+  }
+  .focus {
+    flex: 0 1 220px;
+    display: flex;
+    flex-direction: column;
+  }
+  .lede {
+    margin: 0;
+    flex: 1 1 520px;
+    max-width: 720px;
+    font-size: clamp(20px, 2vw, 26px);
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  .index {
+    padding: 56px 0 80px;
+  }
+  .index-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding-bottom: 20px;
+  }
+  .more {
+    text-decoration: none;
+    color: var(--accent);
+  }
+  .rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: var(--rule);
+  }
+  .rows li {
+    border-bottom: var(--hairline);
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 32px;
+    padding: 28px 0;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .no {
+    flex: 0 0 64px;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .date {
+    flex-basis: 96px;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+  }
+  .name {
+    flex: 1 1 360px;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(32px, 4.4vw, 60px);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    transition:
+      color 0.2s,
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .name-sm {
+    font-size: clamp(24px, 2.6vw, 36px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  a.row:hover .name {
+    color: var(--accent);
+    transform: translateX(8px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    a.row:hover .name {
+      transform: none;
+    }
+  }
+  .desc {
+    flex: 1 1 300px;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .kind {
+    flex: 0 1 180px;
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+
+  .about {
+    padding: 0 0 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+  }
+  .about p {
+    margin: 0;
+    font-size: 19px;
+    line-height: 1.6;
+  }
+  .tools {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 17px;
+    line-height: 1.5;
+  }
+
+  .contact {
+    padding: 64px 0 56px;
+    border-top: var(--rule);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .contact h2 {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(44px, 8vw, 120px);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+  }
+  .contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 40px;
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 20px;
+  }
+  .contact-links a {
+    padding: 12px 0;
+  }
+</style>

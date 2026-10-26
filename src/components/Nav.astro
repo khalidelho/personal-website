@@ -1,0 +1,60 @@
+---
+import { site } from '../data/site';
+import { hasResume } from '../data/resume';
+
+interface Props {
+  /** Prefix for in-page anchors: '' on the homepage, '/' elsewhere. */
+  base?: string;
+  hasWriting?: boolean;
+}
+const { base = '', hasWriting = false } = Astro.props;
+
+const items = [
+  { label: 'Index', href: `${base}#index` },
+  hasWriting && { label: 'Writing', href: `${base}#writing` },
+  hasResume && { label: 'Resume', href: '/resume' },
+  { label: 'About', href: `${base}#about` },
+  { label: 'Contact', href: `${base}#contact` },
+].filter(Boolean) as { label: string; href: string }[];
+---
+
+<nav aria-label="Primary" class="nav">
+  <a href={base ? '/' : '#top'} class="brand">{site.initials}</a>
+  <div class="nav-links">
+    {items.map((i) => <a href={i.href}>{i.label}</a>)}
+  </div>
+</nav>
+
+<style>
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 0;
+    border-bottom: var(--rule);
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 16px;
+  }
+  .nav a {
+    text-decoration: none;
+  }
+  .brand {
+    font-weight: 700;
+  }
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .nav-links a {
+    padding: 12px 14px;
+  }
+  @media (max-width: 420px) {
+    .nav-links a {
+      padding: 12px 8px;
+    }
+  }
+</style>
