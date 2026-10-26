@@ -5,7 +5,8 @@ export const site = {
   description:
     'I run infrastructure and build the tools around it: automations that stay quiet, apps that do one thing, and maps of systems so nobody has to remember them.',
   focus: ['IT systems', 'Automation', 'Small apps'],
-  tools: ['TypeScript, Python, Bash', 'Docker, launchd, n8n', 'Expo / React Native', 'Claude API, RAG'],
+  /** Shown as the scrolling Tools strip between About and Contact. */
+  tools: ['TypeScript', 'Python', 'Bash', 'Docker', 'launchd', 'n8n', 'Expo', 'React Native', 'Claude API', 'RAG'],
   /** Medium handle without the @. Empty = the Writing section is hidden. */
   medium: '',
   // Empty links are hidden. Fill these in before launch.

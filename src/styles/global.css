@@ -68,6 +68,11 @@ a:hover {
   color: var(--accent);
 }
 
+/* Counters tick up digit by digit; fixed-width digits keep them from jittering. */
+[data-count] {
+  font-variant-numeric: tabular-nums;
+}
+
 /* Entrance animations: hidden only when the motion script will reveal them. */
 .motion [data-reveal],
 .motion [data-reveal-group] > * {

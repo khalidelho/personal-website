@@ -33,7 +33,7 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
     <section id="index" aria-labelledby="index-h" class="index">
       <div class="index-head">
         <h2 id="index-h" class="label">Selected work</h2>
-        <span class="label dot">({pad(projects.length)})</span>
+        <span class="label dot">(<span data-count>{pad(projects.length)}</span>)</span>
       </div>
       <ol class="rows" data-reveal-group>
         {
@@ -42,8 +42,8 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
             return (
               <li>
                 <Tag class="row" href={p.href}>
-                  <span class="no dot">{pad(i + 1)}</span>
-                  <span class="name">{p.name}</span>
+                  <span class="no dot" data-count>{pad(i + 1)}</span>
+                  <span class="name" data-scramble>{p.name}</span>
                   <span class="desc">{p.desc}</span>
                   <span class="kind">{p.kind}</span>
                 </Tag>
@@ -87,9 +87,30 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
         By day I keep an IT environment and its billing running. On my own time I build the tools I
         wish I had, and I write up how they work.
       </p>
-      <div class="tools">
-        <span class="label">Tools</span>
-        {site.tools.map((t) => <span>{t}</span>)}
+    </section>
+
+    <section aria-labelledby="tools-h" class="tools">
+      <div class="index-head">
+        <h2 id="tools-h" class="label">Tools</h2>
+        <button type="button" class="label marquee-toggle" aria-label="Pause scrolling tools">Pause</button>
+      </div>
+      <div class="marquee">
+        <div class="marquee-track">
+          {
+            [0, 1].map((copy) => (
+              <ul class="marquee-list" aria-hidden={copy ? 'true' : undefined}>
+                {site.tools.map((t) => (
+                  <li>
+                    {t}
+                    <span class="dot" aria-hidden="true">
+                      .
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ))
+          }
+        </div>
       </div>
     </section>
 
@@ -226,23 +247,107 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
     color: var(--muted);
   }
 
+  /* Same label + text row as the hero. */
   .about {
     padding: 0 0 80px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px 64px;
+  }
+  .about h2 {
+    flex: 0 1 220px;
   }
   .about p {
     margin: 0;
+    flex: 1 1 520px;
+    max-width: 720px;
     font-size: 19px;
     line-height: 1.6;
   }
+
   .tools {
+    padding: 0 0 72px;
+  }
+  .marquee-toggle {
+    display: none;
+    min-height: 44px;
+    padding: 0 4px;
+    border: 0;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .marquee-toggle:hover {
+    color: var(--accent);
+  }
+  .marquee {
+    overflow: hidden;
+    border-top: var(--rule);
+  }
+  .marquee-track {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    font-size: 17px;
-    line-height: 1.5;
+  }
+  .marquee-list {
+    list-style: none;
+    margin: 0;
+    padding: 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 0.5em;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(36px, 6vw, 88px);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .marquee-list li {
+    white-space: nowrap;
+  }
+  /* Without motion: one copy, wrapped onto as many lines as it needs. */
+  .marquee-list[aria-hidden] {
+    display: none;
+  }
+  :global(.motion) .marquee-track {
+    width: max-content;
+    animation: marquee 40s linear infinite;
+  }
+  :global(.motion) .marquee-list {
+    flex-wrap: nowrap;
+    padding-right: 0.5em;
+  }
+  :global(.motion) .marquee-list[aria-hidden] {
+    display: flex;
+  }
+  :global(.motion) .marquee-toggle {
+    display: inline-flex;
+    align-items: center;
+  }
+  .tools.paused .marquee-track {
+    animation-play-state: paused;
+  }
+  /* Touch leaves :hover stuck after a tap, so only real pointers pause on hover. */
+  @media (hover: hover) {
+    .marquee:hover .marquee-track {
+      animation-play-state: paused;
+    }
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media print {
+    .marquee-track {
+      animation: none !important;
+      width: auto !important;
+    }
+    .marquee-list {
+      flex-wrap: wrap !important;
+    }
+    .marquee-list[aria-hidden],
+    .marquee-toggle {
+      display: none !important;
+    }
   }
 
   .contact {
@@ -270,5 +375,26 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
   }
   .contact-links a {
     padding: 12px 0;
+    text-decoration: none;
+    /* A thin ink rule, with a red one drawn over it from the left on hover. */
+    background:
+      linear-gradient(var(--accent), var(--accent)) left calc(100% - 8px) / 0% 2px no-repeat,
+      linear-gradient(var(--ink), var(--ink)) left calc(100% - 8px) / 100% 1px no-repeat;
+    transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s;
+  }
+  .contact-links a:hover,
+  .contact-links a:focus-visible {
+    background-size: 100% 2px, 100% 1px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .contact-links a {
+      transition: none;
+    }
+  }
+  /* Forced colors drop background images, which would remove the underline. */
+  @media (forced-colors: active) {
+    .contact-links a {
+      text-decoration: underline;
+    }
   }
 </style>
