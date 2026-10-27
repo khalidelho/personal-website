@@ -24,8 +24,8 @@ export const site = {
 
 export const contactLinks = () =>
   [
-    { label: 'Email', href: site.links.email && `mailto:${site.links.email}` },
-    { label: 'LinkedIn', href: site.links.linkedin },
-    { label: 'Medium', href: site.medium && `https://medium.com/@${site.medium}` },
-    { label: 'GitHub', href: site.links.github },
-  ].filter((l) => l.href);
+    { label: 'Email', icon: 'mail', href: site.links.email && `mailto:${site.links.email}` },
+    { label: 'LinkedIn', icon: 'linkedin', href: site.links.linkedin },
+    { label: 'Medium', icon: 'medium', href: site.medium && `https://medium.com/@${site.medium}` },
+    { label: 'GitHub', icon: 'github', href: site.links.github },
+  ].filter((l) => l.href) as { label: string; icon: 'mail' | 'linkedin' | 'medium' | 'github'; href: string }[];

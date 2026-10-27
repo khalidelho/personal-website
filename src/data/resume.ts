@@ -11,6 +11,8 @@ export interface Role {
   points: string[];
   /** Tools named in the points; shown as tags on the homepage only. */
   tags?: string[];
+  /** false: the homepage leaves the org out (the name appears on /resume only). */
+  orgOnHome?: boolean;
 }
 
 export interface Entry {
@@ -42,6 +44,7 @@ export const resume: {
     {
       title: 'Field AI Engineer / IT & Billing Manager (Contract)',
       org: 'RIVUS Consulting LLC',
+      orgOnHome: false,
       location: 'Carrollton, TX',
       start: 'Apr 2026',
       end: 'Present',

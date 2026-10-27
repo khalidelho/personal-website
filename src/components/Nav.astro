@@ -1,6 +1,7 @@
 ---
 import { site } from '../data/site';
 import { hasResume } from '../data/resume';
+import Icon from './Icon.astro';
 
 interface Props {
   /** Prefix for in-page anchors: '' on the homepage, '/' elsewhere. */
@@ -24,7 +25,8 @@ const items = [
   <div class="nav-links">
     {items.map((i) => <a href={i.href}>{i.label}</a>)}
     <button type="button" class="theme" aria-label="Switch to dark theme" hidden>
-      <span class="theme-mark" aria-hidden="true"></span>
+      <Icon name="moon" size={20} class="to-dark" />
+      <Icon name="sun" size={20} class="to-light" />
     </button>
   </div>
 </nav>
@@ -93,23 +95,28 @@ const items = [
   .theme[hidden] {
     display: none;
   }
-  /* A half-filled disc: ink on one side, paper on the other. */
-  .theme-mark {
-    width: 18px;
-    height: 18px;
-    border: 2px solid var(--ink);
-    border-radius: 50%;
-    background: linear-gradient(90deg, var(--ink) 50%, transparent 50%);
+  .theme {
+    color: var(--ink);
   }
-  .theme:hover .theme-mark {
-    border-color: var(--accent);
-    background: linear-gradient(90deg, var(--accent) 50%, transparent 50%);
+  .theme:hover {
+    color: var(--accent);
   }
-  @media (forced-colors: active) {
-    .theme-mark {
-      forced-color-adjust: none;
-      border-color: ButtonText;
-      background: linear-gradient(90deg, ButtonText 50%, transparent 50%);
+  /* Moon in light (switch to dark), sun in dark, whichever way dark was chosen. */
+  .theme :global(.to-light) {
+    display: none;
+  }
+  :global(:root[data-theme='dark']) .theme :global(.to-light) {
+    display: block;
+  }
+  :global(:root[data-theme='dark']) .theme :global(.to-dark) {
+    display: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .theme :global(.to-light) {
+      display: block;
+    }
+    :global(:root:not([data-theme='light'])) .theme :global(.to-dark) {
+      display: none;
     }
   }
   @media (max-width: 480px) {

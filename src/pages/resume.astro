@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
 import { site, contactLinks } from '../data/site';
 import { resume, hasResume } from '../data/resume';
 
@@ -22,17 +23,28 @@ const links = contactLinks();
         {
           hasPdf && (
             <a class="pdf screen-only" href="/resume.pdf" download>
-              Download PDF ↓
+              <Icon name="download" size={18} />
+              Download PDF
             </a>
           )
         }
       </div>
       <p class="label focus">{resume.headline || site.focus.join(' · ')}</p>
       <p class="contact-line">
-        {resume.location && <span>{resume.location}</span>}
+        {
+          resume.location && (
+            <span>
+              <Icon name="map-pin" size={16} />
+              {resume.location}
+            </span>
+          )
+        }
         {
           links.map((l) => (
-            <a href={l.href}>{l.href.replace(/^mailto:|^https:\/\/(www\.)?/, '').replace(/\/$/, '')}</a>
+            <a href={l.href}>
+              <Icon name={l.icon} size={16} />
+              {l.href.replace(/^mailto:|^https:\/\/(www\.)?/, '').replace(/\/$/, '')}
+            </a>
           ))
         }
       </p>
@@ -165,6 +177,7 @@ const links = contactLinks();
   .pdf {
     display: inline-flex;
     align-items: center;
+    gap: 10px;
     min-height: 48px;
     padding: 0 20px;
     border: var(--rule);
@@ -278,6 +291,11 @@ const links = contactLinks();
     font-size: 16px;
     color: var(--muted);
   }
+  .contact-line > * {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
   .contact-line a {
     color: var(--ink);
   }
@@ -332,6 +350,10 @@ const links = contactLinks();
     }
     .contact-line a {
       text-decoration: none;
+    }
+    .contact-line :global(.icon) {
+      width: 9pt;
+      height: 9pt;
     }
     .summary {
       font-size: 9.5pt;

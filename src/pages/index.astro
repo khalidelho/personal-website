@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
 import { site, contactLinks } from '../data/site';
 import { projects } from '../data/projects';
 import { resume, hasResume } from '../data/resume';
@@ -31,7 +32,12 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
             <p class="status" data-reveal>
               <span class="status-dot" aria-hidden="true" />
               {role}
-              {resume.location && <span class="status-where">· {resume.location}</span>}
+              {resume.location && (
+                <span class="status-where">
+                  <Icon name="map-pin" size={16} />
+                  {resume.location}
+                </span>
+              )}
             </p>
           )
         }
@@ -49,13 +55,22 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
               {
                 hasResume && (
                   <a class="btn btn-solid" href="/resume">
-                    View résumé ↗
+                    View résumé <Icon name="arrow-up-right" size={18} />
                   </a>
                 )
               }
               <a class="btn" href="#contact">
                 Get in touch
               </a>
+              <ul class="socials" aria-label="Profiles">
+                {links.map((l) => (
+                  <li>
+                    <a href={l.href} aria-label={l.label} title={l.label}>
+                      <Icon name={l.icon} size={22} />
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
@@ -84,7 +99,10 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
                   <span class="no dot" data-count>{pad(i + 1)}</span>
                   <span class="name" data-scramble>{p.name}</span>
                   <span class="desc">{p.desc}</span>
-                  <span class="kind">{p.kind}</span>
+                  <span class="kind">
+                    {p.icon && <Icon name={p.icon} size={16} />}
+                    {p.kind}
+                  </span>
                 </Tag>
                 {(!!p.highlights?.length || !!p.tags?.length) && (
                   <details class="built">
@@ -122,7 +140,7 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
           <div class="index-head">
             <h2 id="exp-h" class="label">Experience</h2>
             <a class="label more" href="/resume">
-              Full résumé ↗
+              Full résumé <Icon name="arrow-up-right" size={16} />
             </a>
           </div>
           <ol class="roles" data-reveal-group>
@@ -135,8 +153,9 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
                 <div class="role-body">
                   <h3>{r.title}</h3>
                   <p class="org">
-                    <strong>{r.org}</strong>
-                    {r.location && <span> · {r.location}</span>}
+                    {r.orgOnHome !== false && <strong>{r.org}</strong>}
+                    {r.orgOnHome !== false && r.location && ' · '}
+                    {r.location}
                   </p>
                   <ul class="points">
                     {r.points.map((pt) => (
@@ -164,7 +183,7 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
           <div class="index-head">
             <h2 id="writing-h" class="label">Writing</h2>
             <a class="label more" href={`https://medium.com/@${site.medium}`}>
-              All on Medium ↗
+              All on Medium <Icon name="arrow-up-right" size={16} />
             </a>
           </div>
           <ol class="rows" data-reveal-group>
@@ -176,7 +195,10 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
                   </time>
                   <span class="name name-sm">{a.title}</span>
                   <span class="desc">{a.excerpt}</span>
-                  <span class="kind">Medium ↗</span>
+                  <span class="kind">
+                    <Icon name="medium" size={16} />
+                    Medium
+                  </span>
                 </a>
               </li>
             ))}
@@ -257,14 +279,23 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
           <div class="contact-intro" data-reveal>
             <p>Email is the fastest way to reach me.</p>
             <button type="button" class="btn copy" data-email={site.links.email} hidden>
-              Copy email
+              <Icon name="copy" size={18} class="when-idle" />
+              <Icon name="check" size={18} class="when-done" />
+              <span class="copy-text">Copy email</span>
             </button>
             <span class="copied sr-only" role="status" />
           </div>
         )
       }
       <div class="contact-links" data-reveal-group>
-        {links.map((l) => <a href={l.href}>{l.label} ↗</a>)}
+        {
+          links.map((l) => (
+            <a href={l.href}>
+              <Icon name={l.icon} size={20} />
+              {l.label}
+            </a>
+          ))
+        }
       </div>
     </section>
 
@@ -278,20 +309,23 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
   document.querySelectorAll<HTMLButtonElement>('.copy').forEach((btn) => {
     if (!navigator.clipboard) return;
     const status = btn.nextElementSibling as HTMLElement;
+    const text = btn.querySelector('.copy-text')!;
     btn.hidden = false;
     let timer = 0;
     btn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(btn.dataset.email!);
-        btn.textContent = 'Copied';
+        text.textContent = 'Copied';
+        btn.classList.add('done');
         status.textContent = 'Email address copied';
       } catch {
-        btn.textContent = 'Copy failed';
+        text.textContent = 'Copy failed';
         status.textContent = '';
       }
       clearTimeout(timer);
       timer = window.setTimeout(() => {
-        btn.textContent = 'Copy email';
+        text.textContent = 'Copy email';
+        btn.classList.remove('done');
         status.textContent = '';
       }, 2000);
     });
@@ -330,6 +364,9 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
     background: var(--accent);
   }
   .status-where {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     font-weight: 500;
     color: var(--muted);
   }
@@ -356,7 +393,25 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
   .cta {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 12px;
+  }
+  .btn :global(.icon) {
+    margin-left: 8px;
+  }
+  .socials {
+    list-style: none;
+    margin: 0 0 0 8px;
+    padding: 0;
+    display: flex;
+    gap: 4px;
+  }
+  .socials a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
   }
   .hero h1 {
     margin: 0;
@@ -395,6 +450,9 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
     padding-bottom: 20px;
   }
   .more {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     text-decoration: none;
     color: var(--accent);
   }
@@ -462,6 +520,9 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
   }
   .kind {
     flex: 0 1 180px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     font-family: var(--display);
     font-weight: 500;
     font-size: 14px;
@@ -765,6 +826,16 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
     align-items: center;
     gap: 16px 24px;
   }
+  .copy :global(.icon) {
+    margin: 0 8px 0 0;
+  }
+  .copy :global(.when-done),
+  .copy.done :global(.when-idle) {
+    display: none;
+  }
+  .copy.done :global(.when-done) {
+    display: block;
+  }
   .contact-intro p {
     margin: 0;
     font-size: 19px;
@@ -786,6 +857,9 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
     font-size: 20px;
   }
   .contact-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
     padding: 12px 0;
     text-decoration: none;
     /* A thin ink rule, with a red one drawn over it from the left on hover. */
