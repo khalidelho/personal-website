@@ -7,8 +7,12 @@ export const site = {
   focus: ['IT systems', 'Automation', 'Small apps'],
   /** Shown as the scrolling Tools strip between About and Contact. */
   tools: ['TypeScript', 'Python', 'Bash', 'Docker', 'launchd', 'n8n', 'Expo', 'React Native', 'Claude API', 'RAG'],
-  /** Medium handle without the @. Empty = the Writing section is hidden. */
-  medium: '',
+  /**
+   * Medium handle without the @, from MEDIUM_HANDLE in .env (kept out of the
+   * repo because the leak guard's deny list covers it). Empty = no Medium link
+   * and no Writing section.
+   */
+  medium: import.meta.env.MEDIUM_HANDLE ?? '',
   // Empty links are hidden. Fill these in before launch.
   links: {
     email: '',
