@@ -17,7 +17,7 @@ export const site = {
   links: {
     email: '',
     github: 'https://github.com/khalidelho',
-    linkedin: '',
+    linkedin: 'https://www.linkedin.com/in/khalidel/',
   },
 };
 
