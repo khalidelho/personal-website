@@ -10,6 +10,39 @@
   --body: 'Inter Variable', Inter, system-ui, sans-serif;
   --rule: 2px solid var(--ink);
   --hairline: 1px solid var(--ink);
+  color-scheme: light;
+}
+
+/* Dark: the same index, inverted. Follows the system unless the visitor
+   picked a theme with the nav toggle (saved as data-theme on <html>). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #0d0d0d;
+    --ink: #f2f2f2;
+    --muted: #b3b3b3;
+    --accent: #ff5236;
+    color-scheme: dark;
+  }
+}
+:root[data-theme='dark'] {
+  --paper: #0d0d0d;
+  --ink: #f2f2f2;
+  --muted: #b3b3b3;
+  --accent: #ff5236;
+  color-scheme: dark;
+}
+
+/* Paper is always white. */
+@media print {
+  :root,
+  :root[data-theme='dark'],
+  :root:not([data-theme='light']) {
+    --paper: #ffffff;
+    --ink: #111111;
+    --muted: #444444;
+    --accent: #d0260f;
+    color-scheme: light;
+  }
 }
 
 *,
@@ -66,6 +99,54 @@ a:hover {
 
 .dot {
   color: var(--accent);
+}
+
+/* Small outlined chips for a project's or role's stack. */
+.tags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tags li {
+  padding: 4px 10px;
+  border: var(--hairline);
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+/* Bordered and filled buttons (hero calls to action, copy email). */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 22px;
+  border: var(--rule);
+  background: none;
+  color: var(--ink);
+  font: 700 16px/1 var(--display);
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+.btn[hidden] {
+  display: none;
+}
+.btn-solid {
+  background: var(--ink);
+  color: var(--paper);
+}
+.btn-solid:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--paper);
 }
 
 /* Counters tick up digit by digit; fixed-width digits keep them from jittering. */

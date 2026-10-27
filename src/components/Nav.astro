@@ -11,6 +11,7 @@ const { base = '', hasWriting = false } = Astro.props;
 
 const items = [
   { label: 'Index', href: `${base}#index` },
+  hasResume && { label: 'Experience', href: `${base}#experience` },
   hasWriting && { label: 'Writing', href: `${base}#writing` },
   hasResume && { label: 'Resume', href: '/resume' },
   { label: 'About', href: `${base}#about` },
@@ -22,8 +23,32 @@ const items = [
   <a href={base ? '/' : '#top'} class="brand">{site.initials}</a>
   <div class="nav-links">
     {items.map((i) => <a href={i.href}>{i.label}</a>)}
+    <button type="button" class="theme" aria-label="Switch to dark theme" hidden>
+      <span class="theme-mark" aria-hidden="true"></span>
+    </button>
   </div>
 </nav>
+
+<script>
+  // Flip between light and dark, starting from whatever is showing now
+  // (a saved choice, or the system setting). The button needs JS, so it
+  // stays hidden without it.
+  const root = document.documentElement;
+  const dark = () =>
+    root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  document.querySelectorAll<HTMLButtonElement>('.theme').forEach((btn) => {
+    const label = () => btn.setAttribute('aria-label', `Switch to ${dark() ? 'light' : 'dark'} theme`);
+    btn.hidden = false;
+    label();
+    btn.addEventListener('click', () => {
+      root.dataset.theme = dark() ? 'light' : 'dark';
+      try {
+        localStorage.setItem('theme', root.dataset.theme);
+      } catch {}
+      label();
+    });
+  });
+</script>
 
 <style>
   .nav {
@@ -47,12 +72,47 @@ const items = [
   .nav-links {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 4px;
   }
   .nav-links a {
     padding: 12px 14px;
   }
-  @media (max-width: 420px) {
+  .theme {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-left: 6px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .theme[hidden] {
+    display: none;
+  }
+  /* A half-filled disc: ink on one side, paper on the other. */
+  .theme-mark {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    background: linear-gradient(90deg, var(--ink) 50%, transparent 50%);
+  }
+  .theme:hover .theme-mark {
+    border-color: var(--accent);
+    background: linear-gradient(90deg, var(--accent) 50%, transparent 50%);
+  }
+  @media (forced-colors: active) {
+    .theme-mark {
+      forced-color-adjust: none;
+      border-color: ButtonText;
+      background: linear-gradient(90deg, ButtonText 50%, transparent 50%);
+    }
+  }
+  @media (max-width: 480px) {
     .nav-links a {
       padding: 12px 8px;
     }

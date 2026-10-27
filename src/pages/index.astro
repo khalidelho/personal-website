@@ -1,10 +1,17 @@
 ---
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { site, contactLinks } from '../data/site';
 import { projects } from '../data/projects';
+import { resume, hasResume } from '../data/resume';
 import { getArticles } from '../lib/medium';
+
+// Drop a photo at public/headshot.jpg and the hero makes room for it.
+const hasPhoto = existsSync(join(process.cwd(), 'public', 'headshot.jpg'));
+const role = resume.headline.split(' — ')[0];
 
 const [first, ...rest] = site.name.split(' ');
 const links = contactLinks();
@@ -17,17 +24,49 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
   <div class="wrap">
     <Nav hasWriting={articles.length > 0} />
 
-    <header id="top" class="hero">
-      <h1>
-        <span class="line"><span data-line>{first}</span></span>
-        <span class="line"><span data-line>{rest.join(' ')}<span class="dot">.</span></span></span>
-      </h1>
-      <div class="hero-row" data-reveal>
-        <p class="label focus">
-          {site.focus.map((f) => <span>{f}</span>)}
-        </p>
-        <p class="lede">{site.description}</p>
+    <header id="top" class={hasPhoto ? 'hero has-photo' : 'hero'}>
+      <div class="hero-main">
+        {
+          role && (
+            <p class="status" data-reveal>
+              <span class="status-dot" aria-hidden="true" />
+              {role}
+              {resume.location && <span class="status-where">· {resume.location}</span>}
+            </p>
+          )
+        }
+        <h1>
+          <span class="line"><span data-line>{first}</span></span>
+          <span class="line"><span data-line>{rest.join(' ')}<span class="dot">.</span></span></span>
+        </h1>
+        <div class="hero-row" data-reveal>
+          <p class="label focus">
+            {site.focus.map((f) => <span>{f}</span>)}
+          </p>
+          <div class="hero-text">
+            <p class="lede">{site.description}</p>
+            <div class="cta">
+              {
+                hasResume && (
+                  <a class="btn btn-solid" href="/resume">
+                    View résumé ↗
+                  </a>
+                )
+              }
+              <a class="btn" href="#contact">
+                Get in touch
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
+      {
+        hasPhoto && (
+          <div class="photo" data-reveal>
+            <img src="/headshot.jpg" alt={`Portrait of ${site.name}`} width="480" height="600" />
+          </div>
+        )
+      }
     </header>
 
     <section id="index" aria-labelledby="index-h" class="index">
@@ -47,12 +86,77 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
                   <span class="desc">{p.desc}</span>
                   <span class="kind">{p.kind}</span>
                 </Tag>
+                {(!!p.highlights?.length || !!p.tags?.length) && (
+                  <details class="built">
+                    <summary class="label">
+                      What I built <span class="plus" aria-hidden="true" />
+                    </summary>
+                    <div class="built-body">
+                      {!!p.highlights?.length && (
+                        <ul class="points">
+                          {p.highlights.map((h) => (
+                            <li>{h}</li>
+                          ))}
+                        </ul>
+                      )}
+                      {!!p.tags?.length && (
+                        <ul class="tags" aria-label="Stack">
+                          {p.tags.map((t) => (
+                            <li>{t}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </details>
+                )}
               </li>
             );
           })
         }
       </ol>
     </section>
+
+    {
+      hasResume && (
+        <section id="experience" aria-labelledby="exp-h" class="index">
+          <div class="index-head">
+            <h2 id="exp-h" class="label">Experience</h2>
+            <a class="label more" href="/resume">
+              Full résumé ↗
+            </a>
+          </div>
+          <ol class="roles" data-reveal-group>
+            {resume.experience.map((r) => (
+              <li class="role">
+                <p class="when">
+                  {r.end === 'Present' && <span class="now" aria-hidden="true" />}
+                  {r.start} – {r.end}
+                </p>
+                <div class="role-body">
+                  <h3>{r.title}</h3>
+                  <p class="org">
+                    <strong>{r.org}</strong>
+                    {r.location && <span> · {r.location}</span>}
+                  </p>
+                  <ul class="points">
+                    {r.points.map((pt) => (
+                      <li>{pt}</li>
+                    ))}
+                  </ul>
+                  {!!r.tags?.length && (
+                    <ul class="tags" aria-label="Tools">
+                      {r.tags.map((t) => (
+                        <li>{t}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )
+    }
 
     {
       articles.length > 0 && (
@@ -90,6 +194,25 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
       </p>
     </section>
 
+    {
+      resume.education.length > 0 && (
+        <section aria-labelledby="edu-h" class="about" data-reveal>
+          <h2 id="edu-h" class="label">Education</h2>
+          <ul class="edu">
+            {resume.education.map((e) => (
+              <li>
+                <strong>{e.title}</strong>
+                <span>
+                  {e.org}
+                  {e.year && `, ${e.year}`}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
     <section aria-labelledby="tools-h" class="tools">
       <div class="index-head">
         <h2 id="tools-h" class="label">Tools</h2>
@@ -113,10 +236,33 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
           }
         </div>
       </div>
+      {
+        resume.skills.length > 0 && (
+          <dl class="skills" data-reveal-group>
+            {resume.skills.map((g) => (
+              <div>
+                <dt class="label">{g.group}</dt>
+                <dd>{g.items.join(', ')}</dd>
+              </div>
+            ))}
+          </dl>
+        )
+      }
     </section>
 
     <section id="contact" aria-labelledby="contact-h" class="contact">
       <h2 id="contact-h" data-reveal>Say hello<span class="dot">.</span></h2>
+      {
+        site.links.email && (
+          <div class="contact-intro" data-reveal>
+            <p>Email is the fastest way to reach me.</p>
+            <button type="button" class="btn copy" data-email={site.links.email} hidden>
+              Copy email
+            </button>
+            <span class="copied sr-only" role="status" />
+          </div>
+        )
+      }
       <div class="contact-links" data-reveal-group>
         {links.map((l) => <a href={l.href}>{l.label} ↗</a>)}
       </div>
@@ -126,13 +272,91 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
   </div>
 </Base>
 
+<script>
+  // Copy the email address. Needs the Clipboard API, so the button stays
+  // hidden where that isn't available (or without JS).
+  document.querySelectorAll<HTMLButtonElement>('.copy').forEach((btn) => {
+    if (!navigator.clipboard) return;
+    const status = btn.nextElementSibling as HTMLElement;
+    btn.hidden = false;
+    let timer = 0;
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.email!);
+        btn.textContent = 'Copied';
+        status.textContent = 'Email address copied';
+      } catch {
+        btn.textContent = 'Copy failed';
+        status.textContent = '';
+      }
+      clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        btn.textContent = 'Copy email';
+        status.textContent = '';
+      }, 2000);
+    });
+  });
+</script>
+
 <style>
   .hero {
     padding: 72px 0 64px;
     display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 48px 64px;
+    border-bottom: var(--rule);
+  }
+  .hero-main {
+    flex: 1 1 560px;
+    min-width: 0;
+    display: flex;
     flex-direction: column;
     gap: 40px;
-    border-bottom: var(--rule);
+  }
+  .status {
+    margin: 0 0 -12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+  }
+  .status-where {
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .photo {
+    flex: 0 1 360px;
+    min-width: 0;
+  }
+  /* Offset red block behind the portrait. */
+  .photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    box-shadow: 14px 14px 0 var(--accent);
+  }
+  .hero-text {
+    flex: 1 1 520px;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
   }
   .hero h1 {
     margin: 0;
@@ -155,8 +379,6 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
   }
   .lede {
     margin: 0;
-    flex: 1 1 520px;
-    max-width: 720px;
     font-size: clamp(20px, 2vw, 26px);
     line-height: 1.4;
     font-weight: 500;
@@ -182,7 +404,7 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
     padding: 0;
     border-top: var(--rule);
   }
-  .rows li {
+  .rows > li {
     border-bottom: var(--hairline);
   }
   .row {
@@ -248,6 +470,145 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
     color: var(--muted);
   }
 
+  /* "What I built": a panel under a project row, aligned with its name. */
+  .built {
+    padding: 0 0 24px 96px;
+  }
+  .built summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    list-style: none;
+    cursor: pointer;
+  }
+  .built summary::-webkit-details-marker {
+    display: none;
+  }
+  .built summary:hover {
+    color: var(--accent);
+  }
+  .plus {
+    position: relative;
+    width: 12px;
+    height: 12px;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .plus::before,
+  .plus::after {
+    content: '';
+    position: absolute;
+    inset: 5px 0;
+    background: var(--accent);
+  }
+  .plus::after {
+    transform: rotate(90deg);
+  }
+  .built[open] .plus {
+    transform: rotate(45deg);
+  }
+  /* Forced colors drop backgrounds; keep the plus and the status squares. */
+  @media (forced-colors: active) {
+    .plus::before,
+    .plus::after,
+    .status-dot,
+    .now {
+      forced-color-adjust: none;
+      background: CanvasText;
+    }
+  }
+  .built-body {
+    max-width: 760px;
+    padding: 8px 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .points {
+    margin: 0;
+    padding-left: 1.1em;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 17px;
+    line-height: 1.55;
+  }
+  @media (max-width: 640px) {
+    .built {
+      padding-left: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .plus {
+      transition: none;
+    }
+  }
+  /* Panels are closed on screen; print shows what they hold. */
+  @media print {
+    .built::details-content {
+      content-visibility: visible;
+    }
+    .built summary {
+      display: none;
+    }
+  }
+
+  .roles {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: var(--rule);
+  }
+  .role {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 32px;
+    padding: 32px 0;
+    border-bottom: var(--hairline);
+  }
+  .when {
+    flex: 0 0 200px;
+    margin: 0;
+    padding-top: 8px;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--accent);
+  }
+  .now {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
+    vertical-align: 2px;
+    background: var(--accent);
+  }
+  .role-body {
+    flex: 1 1 480px;
+    min-width: 0;
+    max-width: 860px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .role h3 {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(24px, 2.6vw, 36px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .org {
+    margin: -6px 0 0;
+    font-size: 17px;
+    color: var(--muted);
+  }
+  .org strong {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
   /* Same label + text row as the hero. */
   .about {
     padding: 0 0 80px;
@@ -266,8 +627,40 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
     line-height: 1.6;
   }
 
+  .edu {
+    flex: 1 1 520px;
+    max-width: 720px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .edu li {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 19px;
+    line-height: 1.5;
+  }
+  .edu strong {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 22px;
+  }
+
   .tools {
     padding: 0 0 72px;
+  }
+  .skills {
+    margin: 40px 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px 40px;
+  }
+  .skills dd {
+    margin: 8px 0 0;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--muted);
   }
   .marquee-toggle {
     display: none;
@@ -365,6 +758,24 @@ const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', 
     font-size: clamp(44px, 8vw, 120px);
     line-height: 0.92;
     letter-spacing: -0.04em;
+  }
+  .contact-intro {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 24px;
+  }
+  .contact-intro p {
+    margin: 0;
+    font-size: 19px;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
   .contact-links {
     display: flex;

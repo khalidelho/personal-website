@@ -9,6 +9,8 @@ export interface Role {
   end: string; // e.g. "Present"
   location?: string;
   points: string[];
+  /** Tools named in the points; shown as tags on the homepage only. */
+  tags?: string[];
 }
 
 export interface Entry {
@@ -48,6 +50,7 @@ export const resume: {
         'Automated workflows across the customer stack: ADP payroll exports, Microsoft 365 via REST/Graph APIs, and Claude API pipelines parsing invoice PDFs into validated data, eliminating an estimated 35–40 hours of manual work monthly.',
         'Operated and debugged workflows in live production: monitoring, failure alerting, credential rotation, and validation rules catching edge cases before they reached invoices, delivering 4 consecutive on-time billing cycles.',
       ],
+      tags: ['Python', 'Claude API', 'Microsoft Graph', 'REST APIs', 'ADP'],
     },
     {
       title: 'Implementation Engineer / Operations Manager',
@@ -59,6 +62,7 @@ export const resume: {
         'Digitized a completely unorganized ~500-SKU warehouse into an inventory app with a structured location system, cutting item retrieval from about 2 minutes to 10 seconds.',
         'Built a QR-code labeling system that streamlined picking, and standardized order intake and financial close in QuickBooks, cutting recurring order errors from roughly 10 per month to 2–3.',
       ],
+      tags: ['QuickBooks', 'QR labeling'],
     },
     {
       title: 'Program Manager',
@@ -80,6 +84,7 @@ export const resume: {
         'Launched a consumer web product adopted by 6,000+ students across 15 colleges, setting up recurring user focus groups and interviews to gather continuous feedback on improvements.',
         'Paired direct user feedback with BigQuery SQL usage data to prioritize features and iterate post-launch.',
       ],
+      tags: ['BigQuery', 'SQL'],
     },
   ],
   projects: [
