@@ -1,10 +1,10 @@
 export const site = {
   name: 'Khalid Elhousieny',
   initials: 'K.E.',
-  title: 'Khalid Elhousieny — IT systems, automation, small apps',
+  title: 'Khalid Elhousieny — Forward Deployed Engineer, AI automation & integrations',
   description:
-    'I run infrastructure and build the tools around it: automations that stay quiet, apps that do one thing, and maps of systems so nobody has to remember them.',
-  focus: ['IT systems', 'Automation', 'Small apps'],
+    'I deliver customer-facing automation end to end, from scoping through launch: Python and workflow pipelines, API integrations and Claude-powered tools that keep running in production.',
+  focus: ['AI automation', 'Integrations', 'Forward deployed'],
   /** Shown as the scrolling Tools strip between About and Contact. */
   tools: ['TypeScript', 'Python', 'Bash', 'Docker', 'launchd', 'n8n', 'Expo', 'React Native', 'Claude API', 'RAG'],
   /**
@@ -15,7 +15,8 @@ export const site = {
   medium: import.meta.env.MEDIUM_HANDLE ?? '',
   // Empty links are hidden. Fill these in before launch.
   links: {
-    email: '',
+    /** From CONTACT_EMAIL in .env (it matches the leak guard's deny list). */
+    email: import.meta.env.CONTACT_EMAIL ?? '',
     github: 'https://github.com/khalidelho',
     linkedin: 'https://www.linkedin.com/in/khalidel/',
   },

@@ -27,11 +27,16 @@ const links = contactLinks();
           )
         }
       </div>
-      <p class="label focus">{site.focus.join(' · ')}</p>
-      {resume.summary && <p class="summary">{resume.summary}</p>}
-      <p class="print-only contact-line">
-        {links.map((l) => l.href.replace(/^mailto:|^https:\/\//, '')).join(' · ')}
+      <p class="label focus">{resume.headline || site.focus.join(' · ')}</p>
+      <p class="contact-line">
+        {resume.location && <span>{resume.location}</span>}
+        {
+          links.map((l) => (
+            <a href={l.href}>{l.href.replace(/^mailto:|^https:\/\/(www\.)?/, '').replace(/\/$/, '')}</a>
+          ))
+        }
       </p>
+      {resume.summary && <p class="summary">{resume.summary}</p>}
     </header>
 
     {
@@ -67,6 +72,21 @@ const links = contactLinks();
               </li>
             ))}
           </ol>
+        </section>
+      )
+    }
+
+    {
+      resume.projects.length > 0 && (
+        <section aria-labelledby="proj-h" class="block">
+          <h2 id="proj-h" class="label">Selected projects</h2>
+          <ul class="projects">
+            {resume.projects.map((p) => (
+              <li>
+                <strong>{p.name}.</strong> {p.desc}
+              </li>
+            ))}
+          </ul>
         </section>
       )
     }
@@ -250,67 +270,127 @@ const links = contactLinks();
     color: var(--muted);
   }
 
-  .print-only {
-    display: none;
+  .contact-line {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 1.25em;
+    font-size: 16px;
+    color: var(--muted);
+  }
+  .contact-line a {
+    color: var(--ink);
+  }
+  .projects {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding-left: 1.1em;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 960px;
+    font-size: 17px;
+    line-height: 1.55;
+  }
+  .projects strong {
+    font-family: var(--display);
+    font-weight: 700;
   }
 
+  /* One page, and text that parses cleanly (no negative letter-spacing: text
+     extraction, as hiring systems do it, drops the spaces between tight words). */
   @media print {
     @page {
-      margin: 14mm 16mm;
+      margin: 10mm 13mm;
     }
     .screen-only {
       display: none;
-    }
-    .print-only {
-      display: block;
     }
     :global(.wrap) {
       padding: 0;
       max-width: none;
     }
+    h1,
+    h3,
+    .skills dt,
+    .projects strong {
+      letter-spacing: 0;
+    }
     .head {
-      padding: 0 0 14pt;
-      gap: 8pt;
+      padding: 0 0 8pt;
+      gap: 4pt;
     }
     h1 {
-      font-size: 30pt;
+      font-size: 22pt;
+      line-height: 1;
     }
-    .summary {
-      font-size: 11.5pt;
+    .focus {
+      font-size: 9pt;
     }
     .contact-line {
-      margin: 0;
-      font-size: 10pt;
+      font-size: 9pt;
+    }
+    .contact-line a {
+      text-decoration: none;
+    }
+    .summary {
+      font-size: 9.5pt;
+      line-height: 1.4;
+      max-width: none;
     }
     .block {
-      padding: 14pt 0;
-      gap: 8pt 20pt;
+      padding: 6pt 0;
+      gap: 3pt 16pt;
+    }
+    .block > .label {
+      font-size: 9pt;
     }
     .list {
-      gap: 12pt;
+      gap: 5pt;
     }
     .item {
       break-inside: avoid;
+      gap: 2pt 12pt;
     }
     .when {
-      flex-basis: 90pt;
-      font-size: 10pt;
-      padding-top: 2pt;
+      flex: 0 0 96pt;
+      white-space: nowrap;
+      font-size: 8.5pt;
+      padding-top: 1pt;
     }
     h3 {
-      font-size: 13pt;
+      font-family: var(--body);
+      font-weight: 700;
+      font-size: 10pt;
+      line-height: 1.25;
+    }
+    .meta {
+      margin-top: 1pt;
+      font-size: 8.5pt;
     }
     .points {
-      margin-top: 5pt;
-      gap: 3pt;
-      font-size: 10.5pt;
+      margin-top: 2pt;
+      gap: 1pt;
+      font-size: 9pt;
+      line-height: 1.35;
     }
-    .meta,
-    .skills dd {
-      font-size: 10pt;
+    .projects {
+      gap: 2pt;
+      max-width: none;
+      font-size: 9pt;
+      line-height: 1.35;
+    }
+    .skills {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4pt 16pt;
     }
     .skills dt {
-      font-size: 11pt;
+      font-size: 9.5pt;
+    }
+    .skills dd {
+      margin-top: 1pt;
+      font-size: 8.5pt;
+      line-height: 1.35;
     }
   }
 </style>
