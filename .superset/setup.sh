@@ -17,6 +17,15 @@ if [[ -n "$root" && "$root" != "$PWD" ]]; then
     [[ -e "$name" ]] || { cp "$f" "$name"; echo "copied $name from root checkout"; }
   done
 fi
+# Private working notes are gitignored too: copy them the same way.
+if [[ -n "$root" && "$root" != "$PWD" ]]; then
+  for f in CLAUDE.md docs/build-log.md; do
+    [[ -f "$root/$f" && ! -e "$f" ]] || continue
+    mkdir -p "$(dirname "$f")"
+    cp "$root/$f" "$f"
+    echo "copied $f from root checkout"
+  done
+fi
 if [[ ! -e .env && -f .env.example ]]; then
   cp .env.example .env
   echo "created .env from .env.example"

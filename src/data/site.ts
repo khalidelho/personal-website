@@ -8,14 +8,13 @@ export const site = {
   /** Shown as the scrolling Tools strip between About and Contact. */
   tools: ['TypeScript', 'Python', 'Bash', 'Docker', 'launchd', 'n8n', 'Expo', 'React Native', 'Claude API', 'RAG'],
   /**
-   * Medium handle without the @, from MEDIUM_HANDLE in .env (kept out of the
-   * repo because the leak guard's deny list covers it). Empty = no Medium link
-   * and no Writing section.
+   * Medium handle without the @, from MEDIUM_HANDLE in .env at build time.
+   * Empty = no Medium link and no Writing section.
    */
   medium: import.meta.env.MEDIUM_HANDLE ?? '',
   // Empty links are hidden. Fill these in before launch.
   links: {
-    /** From CONTACT_EMAIL in .env (it matches the leak guard's deny list). */
+    /** From CONTACT_EMAIL in .env at build time. */
     email: import.meta.env.CONTACT_EMAIL ?? '',
     github: 'https://github.com/khalidelho',
     linkedin: 'https://www.linkedin.com/in/khalidel/',

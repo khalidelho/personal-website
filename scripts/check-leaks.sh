@@ -7,7 +7,6 @@
 # Two lists:
 #   1. generic secret/identifier shapes (below) — fine to publish
 #   2. a private deny list of words and IDs (employer, tenant, site, resource names, chat IDs)
-#      — shared with the private-rag repo
 #      in ${MEDIUM_DENYLIST:-~/.config/private-rag/denylist.txt} — kept OUTSIDE the repo,
 #      because the list itself is what must not be published
 #
@@ -19,7 +18,7 @@ set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
 scope=(--untracked); [ "${1:-}" = "--staged" ] && scope=(--cached)
-deny="${MEDIUM_DENYLIST:-$HOME/.config/private-rag/denylist.txt}"   # same list as the private-rag repo
+deny="${MEDIUM_DENYLIST:-$HOME/.config/private-rag/denylist.txt}"
 allowlist="${LEAK_ALLOWLIST:-$HOME/.config/personal-website/leak-allow.txt}"
 found=0
 
