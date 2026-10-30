@@ -29,6 +29,11 @@ Medium posts. It needs these repository secrets: `CLOUDFLARE_API_TOKEN`
 `CONTACT_EMAIL`, and `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` for the
 failure alert. `public/_headers` sets the response headers.
 
+GitHub pauses scheduled workflows after 60 days without a commit, so the daily
+Medium refresh stops if the repo goes quiet; any push (or re-enabling the
+workflow under Actions) restarts it. The leak guard doesn't run in CI, because
+the deny lists live only on my Mac; the pre-commit hook covers what gets pushed.
+
 ## Leak guard
 
 `.githooks/pre-commit` runs `scripts/check-leaks.sh`, which blocks common
