@@ -1,4 +1,5 @@
-# Monthly update PRs for npm packages and the pinned GitHub Actions, one grouped PR each.
+# Monthly update PRs for npm packages, the deploy tooling (.github/deploy) and the pinned
+# GitHub Actions. Minor and patch bumps come grouped; each major version gets its own PR.
 # Security fixes come sooner: Dependabot security updates are on for the repo.
 version: 2
 updates:
@@ -8,11 +9,18 @@ updates:
       interval: monthly
     groups:
       npm:
-        patterns: ['*']
+        update-types: [minor, patch]
+  - package-ecosystem: npm
+    directory: /.github/deploy
+    schedule:
+      interval: monthly
+    groups:
+      deploy-tools:
+        update-types: [minor, patch]
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
     groups:
       actions:
-        patterns: ['*']
+        update-types: [minor, patch]

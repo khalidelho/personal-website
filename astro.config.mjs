@@ -1,4 +1,6 @@
+import { createHash } from 'node:crypto';
 import { defineConfig } from 'astro/config';
+import { boot } from './src/scripts/boot.mjs';
 
 export default defineConfig({
   // No code blocks on the site; Shiki's inline styles would also need a CSP exception.
@@ -15,6 +17,11 @@ export default defineConfig({
         "base-uri 'self'",
         "form-action 'none'",
       ],
+      // Astro doesn't hash <script is:inline>; the pre-paint boot script is hashed here, from
+      // the same string Base.astro renders. scripts/check-csp.mjs checks nothing is missed.
+      scriptDirective: {
+        hashes: [`sha256-${createHash('sha256').update(boot).digest('base64')}`],
+      },
     },
   },
 });

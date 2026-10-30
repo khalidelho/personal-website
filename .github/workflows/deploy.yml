@@ -58,15 +58,21 @@ jobs:
           npm run resume:pdf
           test -s dist/resume.pdf
 
+      # A script or style the CSP doesn't hash would be blocked in the browser, not at build.
+      - run: node scripts/check-csp.mjs
+
       - name: Deploy to Cloudflare Pages
         if: env.DEPENDABOT_PR != 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           BRANCH: ${{ github.head_ref || github.ref_name }}
-        run: >-
-          npx --yes wrangler@4.156.0 pages deploy dist
-          --project-name="$PAGES_PROJECT" --branch="$BRANCH" --commit-hash="$GITHUB_SHA"
+        # Wrangler comes from .github/deploy's lockfile (whole tree pinned, install scripts off),
+        # since this step holds the Cloudflare token.
+        run: |
+          npm ci --prefix .github/deploy --ignore-scripts --no-audit --no-fund
+          .github/deploy/node_modules/.bin/wrangler pages deploy dist \
+            --project-name="$PAGES_PROJECT" --branch="$BRANCH" --commit-hash="$GITHUB_SHA"
 
       # A failed production deploy needs a human; the daily run repeats the ping until it's fixed.
       - name: Telegram alert
