@@ -1,0 +1,46 @@
+---
+// Cloudflare Pages serves this with a 404 status; without it, unknown paths get the homepage with 200.
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../data/site';
+---
+
+<Base title={`Not found — ${site.name}`}>
+  <div class="wrap">
+    <Nav base="/" />
+    <main class="missing">
+      <p class="label">404</p>
+      <h1>Nothing here<span class="dot">.</span></h1>
+      <p>That page doesn't exist, or it moved.</p>
+      <a class="btn btn-solid" href="/">
+        <Icon name="arrow-up-right" size={18} />
+        Back to the index
+      </a>
+    </main>
+    <Footer />
+  </div>
+</Base>
+
+<style>
+  .missing {
+    padding: 96px 0 120px;
+    border-bottom: var(--rule);
+  }
+  .missing h1 {
+    margin: 8px 0 16px;
+    font-family: var(--display);
+    font-size: clamp(48px, 9vw, 112px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+  }
+  .missing p:not(.label) {
+    margin: 0 0 32px;
+    color: var(--muted);
+    font-size: 18px;
+  }
+  .dot {
+    color: var(--accent);
+  }
+</style>

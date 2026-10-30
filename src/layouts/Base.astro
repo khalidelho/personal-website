@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { site } from '../data/site';
+import { boot } from '../scripts/boot.mjs';
 
 interface Props {
   title?: string;
@@ -20,21 +21,7 @@ const { title = site.title, description = site.description } = Astro.props;
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <script is:inline>
-      // Apply a saved theme choice before paint (no flash of the wrong theme).
-      try {
-        const t = localStorage.getItem('theme');
-        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
-      } catch {}
-      // Opt into entrance animations before first paint. If the animation
-      // script hasn't run within 3s, drop the class so nothing stays hidden.
-      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        document.documentElement.classList.add('motion');
-        setTimeout(() => {
-          if (!window.__motionReady) document.documentElement.classList.remove('motion');
-        }, 3000);
-      }
-    </script>
+    <script is:inline set:html={boot} />
   </head>
   <body>
     <slot />

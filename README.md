@@ -19,12 +19,27 @@ Content lives in `src/data/` (`site.ts`, `projects.ts`, `resume.ts`). The
 Medium handle and contact email come from `.env` at build time (see
 `.env.example`); empty values hide the parts that need them.
 
+## Deploy
+
+`.github/workflows/deploy.yml` builds the site and résumé PDF on GitHub
+Actions and uploads `dist/` to Cloudflare Pages: pushes to `main` go to
+production, pull requests get a preview URL, and a daily run picks up new
+Medium posts. It needs these repository secrets: `CLOUDFLARE_API_TOKEN`
+(Account › Cloudflare Pages › Edit), `CLOUDFLARE_ACCOUNT_ID`, `MEDIUM_HANDLE`,
+`CONTACT_EMAIL`, and `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` for the
+failure alert. `public/_headers` sets the response headers.
+
+GitHub pauses scheduled workflows after 60 days without a commit, so the daily
+Medium refresh stops if the repo goes quiet; any push (or re-enabling the
+workflow under Actions) restarts it. The leak guard doesn't run in CI, because
+the deny lists live only on my Mac; the pre-commit hook covers what gets pushed.
+
 ## Leak guard
 
 `.githooks/pre-commit` runs `scripts/check-leaks.sh`, which blocks common
-secret shapes (API keys, tokens, private keys) plus my own deny list of private
-names, kept outside the repo. Enable it with `git config core.hooksPath .githooks`.
-Without a deny list at the path the script names, it refuses to run; set
+secret shapes (API keys, tokens, private keys) plus my own two deny lists of
+private names, kept outside the repo. Enable it with `git config core.hooksPath .githooks`.
+Without both deny lists at the paths the script names, it refuses to run; set
 `ALLOW_NO_DENYLIST=1` to scan for secrets only.
 
 ## Credits

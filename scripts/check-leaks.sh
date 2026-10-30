@@ -4,11 +4,12 @@
 #   scripts/check-leaks.sh            scan the working tree (tracked + new files)
 #   scripts/check-leaks.sh --staged   scan exactly what is about to be committed
 #
-# Two lists:
+# Two kinds of list:
 #   1. generic secret/identifier shapes (below) — fine to publish
-#   2. a private deny list of words and IDs (employer, tenant, site, resource names, chat IDs)
-#      in ${MEDIUM_DENYLIST:-~/.config/private-rag/denylist.txt} — kept OUTSIDE the repo,
-#      because the list itself is what must not be published
+#   2. private deny lists of words and IDs, kept OUTSIDE the repo because the lists themselves
+#      are what must not be published. This repo is public, so it reads both tiers:
+#        ${MEDIUM_DENYLIST:-~/.config/private-rag/denylist.txt}                (employer, tenants, people, IDs)
+#        ${MEDIUM_DENYLIST_PUBLIC:-~/.config/private-rag/denylist-public.txt}  (my own identifiers)
 #
 # Deliberate exceptions to the deny list live outside the repo too, in
 # ${LEAK_ALLOWLIST:-~/.config/personal-website/leak-allow.txt}: one `path:term` per line (term is the
@@ -19,6 +20,7 @@ cd "$(git rev-parse --show-toplevel)"
 
 scope=(--untracked); [ "${1:-}" = "--staged" ] && scope=(--cached)
 deny="${MEDIUM_DENYLIST:-$HOME/.config/private-rag/denylist.txt}"
+deny_public="${MEDIUM_DENYLIST_PUBLIC:-$HOME/.config/private-rag/denylist-public.txt}"
 allowlist="${LEAK_ALLOWLIST:-$HOME/.config/personal-website/leak-allow.txt}"
 found=0
 
@@ -50,10 +52,21 @@ done
 # base64 integrity hashes, and short deny terms match random letters inside those hashes.
 # The secret patterns above still scan them.
 lockfiles=(':!**/package-lock.json' ':!**/yarn.lock' ':!**/pnpm-lock.yaml' ':!package-lock.json')
-if [ -f "$deny" ]; then
-  terms=$(grep -vE '^\s*(#|$)' "$deny" || true)
-  if [ -z "$terms" ]; then
+# Each tier must exist; the shared one must also have entries (the public one may be empty).
+have=0
+for list in "$deny" "$deny_public"; do
+  if [ -f "$list" ]; then have=1
+  elif [ "${ALLOW_NO_DENYLIST:-}" != "1" ]; then
+    echo "✗ private deny list not found at $list — refusing (set ALLOW_NO_DENYLIST=1 to skip it)"; found=1
+  fi
+done
+if [ $have -eq 1 ]; then
+  # grep per file (not cat a b), so a list without a trailing newline can't merge two terms
+  terms=$(for list in "$deny" "$deny_public"; do [ -f "$list" ] && grep -vE '^\s*(#|$)' "$list"; done || true)
+  if [ -f "$deny" ] && ! grep -qvE '^\s*(#|$)' "$deny"; then
     echo "✗ private deny list at $deny has no entries — refusing"; found=1
+  elif [ -z "$terms" ]; then
+    : # only an empty public tier is present (ALLOW_NO_DENYLIST=1): nothing to scan
   else
     # -o prints path:line:matched-text, so an exception covers exactly one term in one file.
     # Limitation: -o reports the leftmost-longest match, so inside an allowlisted file a deny
@@ -72,8 +85,6 @@ if [ -f "$deny" ]; then
       echo "✗ matches the private deny list:"; echo "$hits" | sed 's/^/    /'; found=1
     fi
   fi
-elif [ "${ALLOW_NO_DENYLIST:-}" != "1" ]; then
-  echo "✗ private deny list not found at $deny — refusing (set ALLOW_NO_DENYLIST=1 to skip it)"; found=1
 fi
 
 [ $found -eq 0 ] && echo "✓ no leaks found" || { echo; echo "Fix the lines above (or use placeholders) and try again."; exit 1; }

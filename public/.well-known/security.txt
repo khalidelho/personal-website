@@ -1,0 +1,5 @@
+# Found a security problem with this site? Please report it privately.
+Contact: https://github.com/khalidelho/personal-website/security/advisories/new
+Expires: 2027-10-29T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://khalid-elhousieny.pages.dev/.well-known/security.txt

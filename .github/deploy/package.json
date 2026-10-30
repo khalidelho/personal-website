@@ -1,0 +1,8 @@
+{
+  "name": "deploy-tools",
+  "private": true,
+  "description": "Wrangler for the deploy workflow, kept out of the site's own dependencies. The lockfile pins its whole tree; Dependabot updates it.",
+  "devDependencies": {
+    "wrangler": "4.156.0"
+  }
+}
