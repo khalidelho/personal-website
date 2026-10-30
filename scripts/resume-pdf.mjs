@@ -96,6 +96,10 @@ try {
   server.close();
   proc.kill();
   if (proc.pid) await new Promise((r) => (proc.exitCode !== null || proc.signalCode !== null ? r() : proc.once('exit', r)));
-  await rm(profile, { recursive: true, force: true });
+  // Chrome's helper processes can still be writing the profile after the main one exits, so
+  // retry, and never fail the run over a temp dir once the PDF is written.
+  await rm(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }).catch((e) =>
+    console.warn(`could not remove ${profile}: ${e.code}`),
+  );
 }
 console.log(`résumé PDF → ${out}`);
