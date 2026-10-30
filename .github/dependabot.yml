@@ -1,0 +1,18 @@
+# Monthly update PRs for npm packages and the pinned GitHub Actions, one grouped PR each.
+# Security fixes come sooner: Dependabot security updates are on for the repo.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      npm:
+        patterns: ['*']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']

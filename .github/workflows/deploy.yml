@@ -4,6 +4,8 @@ name: Deploy
 #   push to main, daily run  → production (the daily run picks up new Medium posts,
 #                              which the build reads from RSS)
 #   pull request (this repo) → a preview URL; fork PRs get no secrets, so they skip
+#   Dependabot PR            → build only: it gets no secrets, and an unreviewed dependency
+#                              shouldn't run next to the Cloudflare token anyway
 on:
   push:
     branches: [main]
@@ -27,6 +29,8 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      DEPENDABOT_PR: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -48,13 +52,14 @@ jobs:
           CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
         run: |
           # Without these the Medium link, Writing section and email links drop silently.
-          if [ -z "$MEDIUM_HANDLE" ] || [ -z "$CONTACT_EMAIL" ]; then
+          if [ "$DEPENDABOT_PR" != true ] && { [ -z "$MEDIUM_HANDLE" ] || [ -z "$CONTACT_EMAIL" ]; }; then
             echo "::error::Set the MEDIUM_HANDLE and CONTACT_EMAIL repository secrets."; exit 1
           fi
           npm run resume:pdf
           test -s dist/resume.pdf
 
       - name: Deploy to Cloudflare Pages
+        if: env.DEPENDABOT_PR != 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
