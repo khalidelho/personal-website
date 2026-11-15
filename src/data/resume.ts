@@ -36,45 +36,46 @@ export const resume: {
   certifications: Entry[];
   skills: { group: string; items: string[] }[];
 } = {
-  headline: 'Forward Deployed Engineer — AI Automation & Integrations',
+  headline: 'AI Engineer — Forward Deployed, Generative AI & Agentic Workflows',
   location: 'Dallas-Fort Worth Metroplex, TX',
   summary:
-    'Automation-focused engineer with a Computer Science degree who delivers customer-facing automation end to end, from scoping through launch, with no specs and no playbook. Builds production automation in Python and workflow tools (n8n, GitHub Actions); thinks in data flows, edge cases, and failure modes; and ramps up fast in new domains.',
+    "AI engineer who builds AI systems that do real work: LLM agents, Claude API pipelines and MCP integrations, shipped with human-in-the-loop controls. I've lived the processes I automate (financial close, 500-SKU inventory, live production), so I build AI that moves real metrics. CS degree; Python, SQL, REST APIs.",
   experience: [
     {
-      title: 'Field AI Engineer / IT & Billing Manager (Contract)',
+      title: 'AI Engineer / Forward Deployed Engineer (Contract)',
       org: 'RIVUS Consulting LLC',
       orgOnHome: false,
-      location: 'Carrollton, TX',
+      location: 'Carrollton, TX (remote)',
       start: 'Apr 2026',
       end: 'Present',
       points: [
-        'Scoped and delivered an end-to-end AI automation suite for 6+ government contracts: clarified requirements, defined the technical approach, and shipped production Python automation, cutting invoice prep from roughly 3 days to under a day.',
-        'Automated workflows across the customer stack: ADP payroll exports, Microsoft 365 via REST/Graph APIs, and Claude API pipelines parsing invoice PDFs into validated data, eliminating an estimated 35–40 hours of manual work monthly.',
-        'Operated and debugged workflows in live production: monitoring, failure alerting, credential rotation, and validation rules catching edge cases before they reached invoices, delivering 4 consecutive on-time billing cycles.',
+        'Owned the roadmap and backlog of an AI automation suite replacing manual invoice prep across 6+ government contracts, cutting invoice preparation from 3 days to 6 hours.',
+        'Deployed LLM agents running billing workflows, Claude API pipelines parsing invoices into validated data, MCP integrations linking agents to Microsoft 365, and an AI document assistant, saving ~40 hours a month with human-in-the-loop controls.',
+        'Engineered secure Microsoft Graph and Exchange Online integrations (app-only auth) and ran Microsoft 365 end to end, with 100% on-time submissions across 4 billing cycles.',
       ],
-      tags: ['Python', 'Claude API', 'Microsoft Graph', 'REST APIs', 'ADP'],
+      tags: ['Python', 'Claude API', 'MCP', 'LLM agents', 'Microsoft Graph'],
     },
     {
-      title: 'Implementation Engineer / Operations Manager',
-      org: 'Drive Dynamics',
+      title: 'AI Engineer / Operations Manager',
+      org: 'Drive Dynamics Solutions',
       location: 'Grand Prairie, TX',
       start: 'Aug 2025',
       end: 'Aug 2026',
       points: [
-        'Digitized a completely unorganized ~500-SKU warehouse into an inventory app with a structured location system, cutting item retrieval from about 2 minutes to 10 seconds.',
-        'Built a QR-code labeling system that streamlined picking, and standardized order intake and financial close in QuickBooks, cutting recurring order errors from roughly 10 per month to 2–3.',
+        'Built a WhatsApp AI assistant on the inventory system: staff text it in plain language to check stock and bin locations, log items in and out, and track borrowed tools.',
+        'Digitized a completely unorganized ~500-SKU warehouse into an inventory app with a structured location system and QR-code labels, cutting item retrieval from about 2 minutes to 10 seconds.',
+        'Standardized order intake and financial close in QuickBooks, cutting recurring order errors from about 10 a month to 2–3.',
       ],
-      tags: ['QuickBooks', 'QR labeling'],
+      tags: ['WhatsApp', 'AI assistant', 'QuickBooks', 'QR labeling'],
     },
     {
-      title: 'Program Manager',
+      title: 'Program Manager; Executive Assistant to the President',
       org: 'Qalam Institute',
       location: 'Dallas, TX',
       start: 'Nov 2023',
-      end: 'Mar 2026',
+      end: 'Apr 2026',
       points: [
-        'Ran live technical production for 6 weekly broadcast and streamed programs, resolving issues in real time; incident analysis and pre-event checks cut AV incidents from several a week to a couple a month.',
+        'Ran live production for 6 weekly broadcast and streamed programs; incident analysis and pre-event checks cut AV incidents from several a week to a couple a month.',
       ],
     },
     {
@@ -84,8 +85,8 @@ export const resume: {
       start: 'Sep 2021',
       end: 'Nov 2022',
       points: [
-        'Launched a consumer web product adopted by 6,000+ students across 15 colleges, setting up recurring user focus groups and interviews to gather continuous feedback on improvements.',
-        'Paired direct user feedback with BigQuery SQL usage data to prioritize features and iterate post-launch.',
+        'Launched a consumer web product adopted by 6,000+ students across 15 colleges, pairing user interviews and focus groups with BigQuery SQL usage data to prioritize features after launch.',
+        "Placed 1st at Founders Live Seattle and 2nd of 30 teams at StartupUW's Startup Studio.",
       ],
       tags: ['BigQuery', 'SQL'],
     },
@@ -93,33 +94,31 @@ export const resume: {
   projects: [
     {
       name: 'AI Second Brain',
-      desc: 'Obsidian-based knowledge system: automated pipelines sync notes and OCR-extract documents (PDF, DOCX, XLSX) into a searchable vault, queried by a custom Claude-powered desktop assistant (Electron/JavaScript) with Microsoft 365 integration.',
-    },
-    {
-      name: 'Telegram Contract-Alerts Agent',
-      desc: 'Notification agent wired into the billing automation stack: scheduled jobs push real-time Telegram alerts on contract deadlines, missing timesheet data, pipeline failures, and steps needing human action.',
+      desc: 'Obsidian vault fed by pipelines that sync notes and OCR-extract PDF, DOCX and XLSX files, queried by a Claude-powered Electron assistant with Microsoft 365 access.',
     },
   ],
   education: [
     {
-      title: 'B.S. Computer Science / Software Engineering',
+      title: "B.S. Computer Science / Software Engineering (Dean's List)",
       org: 'University of Washington',
       year: '2023',
     },
   ],
-  certifications: [],
+  certifications: [
+    { title: 'Project management courses', org: 'Microsoft (6-course series) and Google', year: '2025' },
+  ],
   skills: [
     {
-      group: 'Automation',
-      items: ['Python (production automation)', 'Workflow automation (n8n, CI/CD)', 'AI & LLM automation (Claude API, MCP)'],
+      group: 'AI & automation',
+      items: ['Python', 'LLM agents & agentic workflows', 'Claude / OpenAI APIs, MCP', 'n8n, CI/CD'],
     },
     {
       group: 'Integration & data',
-      items: ['REST APIs & integrations', 'SQL & BigQuery', 'JavaScript (React, Node)'],
+      items: ['REST APIs & Microsoft Graph', 'SQL & BigQuery', 'JavaScript (React, Node)'],
     },
     {
       group: 'Delivery',
-      items: ['Production debugging & monitoring', 'Customer-facing delivery', 'B2B ops & ERP (QuickBooks, Excel)'],
+      items: ['Product management', 'Production debugging', 'QuickBooks, Excel'],
     },
   ],
 };

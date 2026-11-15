@@ -1,10 +1,10 @@
 export const site = {
   name: 'Khalid Elhousieny',
   initials: 'K.E.',
-  title: 'Khalid Elhousieny — Forward Deployed Engineer, AI automation & integrations',
+  title: 'Khalid Elhousieny — AI Engineer: generative AI, agentic workflows & automation',
   description:
-    'I deliver customer-facing automation end to end, from scoping through launch: Python and workflow pipelines, API integrations and Claude-powered tools that keep running in production.',
-  focus: ['AI automation', 'Integrations', 'Forward deployed'],
+    'I build AI systems that do real work: LLM agents, Claude API pipelines and MCP integrations, shipped end to end and kept running in production.',
+  focus: ['Generative AI', 'Agentic workflows', 'AI automation'],
   /** Shown as the scrolling Tools strip between About and Contact. */
   tools: ['TypeScript', 'Python', 'Bash', 'Docker', 'launchd', 'n8n', 'Expo', 'React Native', 'Claude API', 'RAG'],
   /**
